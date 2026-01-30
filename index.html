@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCX Symbolic App Foundry - Top 100 Apps</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#05060b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        :root {
+            --bg-primary: #05060b;
+            --bg-secondary: #10121a;
+            --bg-tertiary: #1a1d2a;
+            --accent: #5ac8fa;
+            --accent-soft: rgba(90, 200, 250, 0.2);
+            --text-primary: #f5f7ff;
+            --text-secondary: #b4c2f0;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --purple: #a78bfa;
+            --pink: #f472b6;
+            --cyan: #22d3ee;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #13203a 0%, #02030a 40%, #000 100%);
+            color: var(--text-primary);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+        }
+
+        .foundry-container {
+            display: grid;
+            grid-template-columns: 320px 1fr 400px;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            gap: 1px;
+            background: var(--bg-secondary);
+        }
+
+        /* Header */
+        .foundry-header {
+            grid-column: 1 / -1;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .logo-chip {
+            background: var(--accent-soft);
+            padding: 0.3rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        .app-count {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Symbol Library */
+        .symbol-library {
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .library-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .search-box {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            margin-top: 0.5rem;
+        }
+
+        .library-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 1rem 1rem;
+        }
+
+        .category-accordion {
+            margin-bottom: 1rem;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            cursor: pointer;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .symbol-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 0.5rem 0;
+        }
+
+        .symbol-item {
+            background: var(--bg-tertiary);
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 0.75rem;
+            cursor: grab;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .symbol-item:hover {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            transform: translateX(2px);
+        }
+
+        .symbol-tag {
+            font-size: 0.7rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .symbol-tag.ecommerce { background: rgba(251, 191, 36, 0.2); color: var(--warning); }
+        .symbol-tag.social { background: rgba(168, 85, 247, 0.2); color: var(--purple); }
+        .symbol-tag.productivity { background: rgba(52, 211, 153, 0.2); color: var(--success); }
+        .symbol-tag.enterprise { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+
+        /* App Composer */
+        .app-composer {
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .composer-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recipe-display {
+            flex: 1;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .recipe-slot {
+            background: var(--bg-secondary);
+            border: 2px dashed var(--border-subtle);
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 80px;
+            transition: all 0.3s;
+        }
+
+        .recipe-slot.active {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .slot-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slot-content {
+            min-height: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .slot-chip {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .remove-chip {
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .remove-chip:hover {
+            color: var(--danger);
+        }
+
+        /* Preview Panel */
+        .preview-panel {
+            background: var(--bg-primary);
+            border-left: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-content {
+            flex: 1;
+            padding: 1rem;
+            overflow: auto;
+        }
+
+        .materialized-app {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Controls */
+        .composer-controls {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: black;
+            border-color: var(--accent);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: black;
+            border-color: var(--success);
+        }
+
+        /* App Templates Grid */
+        .app-templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .template-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .template-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .template-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .template-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .template-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Category Colors */
+        .category-ecommerce { border-left: 4px solid var(--warning); }
+        .category-social { border-left: 4px solid var(--purple); }
+        .category-productivity { border-left: 4px solid var(--success); }
+        .category-enterprise { border-left: 4px solid #3b82f6; }
+        .category-analytics { border-left: 4px solid var(--cyan); }
+        .category-media { border-left: 4px solid var(--pink); }
+        .category-utility { border-left: 4px solid #94a3b8; }
+    </style>
+</head>
+<body>
+    <div class="foundry-container">
+        <!-- Header -->
+        <header class="foundry-header">
+            <div class="logo">
+                <div class="logo-chip">Ω</div>
+                <span>SCX Symbolic App Foundry</span>
+                <div class="app-count">100+ App Templates</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn" id="installBtn" style="display: none;">Install App</button>
+                <button class="btn" onclick="saveRecipe()">Save Recipe</button>
+                <button class="btn" onclick="exportApp()">Export App</button>
+                <button class="btn btn-success" onclick="materializeApp()">Materialize App</button>
+            </div>
+        </header>
+
+        <!-- Symbol Library -->
+        <aside class="symbol-library">
+            <div class="library-header">
+                <h3>Top 100 App Library</h3>
+                <input type="text" class="search-box" placeholder="Search apps..." oninput="searchApps(this.value)">
+            </div>
+            <div class="library-content" id="libraryContent">
+                <!-- Categories will be dynamically populated -->
+            </div>
+        </aside>
+
+        <!-- App Composer -->
+        <main class="app-composer">
+            <div class="composer-header">
+                <h2>App Recipe Composer</h2>
+                <div class="recipe-summary" id="recipeSummary">
+                    Drag symbols to build your app recipe
+                </div>
+            </div>
+
+            <div class="recipe-display">
+                <div class="recipe-slot" data-slot="app">
+                    <div class="slot-label">
+                        App Template
+                        <span style="font-size: 0.7rem;">Drag here</span>
+                    </div>
+                    <div class="slot-content" id="appSlot"></div>
+                </div>
+
+                <div class="recipe-slot" data-slot="layout">
+                    <div class="slot-label">
+                        Layout
+                        <span style="font-size: 0.7rem;">Drag here</span>
+                    </div>
+                    <div class="slot-content" id="layoutSlot"></div>
+                </div>
+
+                <div class="recipe-slot" data-slot="blocks">
+                    <div class="slot-label">
+                        UI Blocks (0/10)
+                        <span style="font-size: 0.7rem;">Drag here</span>
+                    </div>
+                    <div class="slot-content" id="blocksSlot"></div>
+                </div>
+
+                <div class="recipe-slot" data-slot="skin">
+                    <div class="slot-label">
+                        Skin
+                        <span style="font-size: 0.7rem;">Drag here</span>
+                    </div>
+                    <div class="slot-content" id="skinSlot"></div>
+                </div>
+
+                <div class="recipe-slot" data-slot="code">
+                    <div class="slot-label">
+                        Code Modules (0/5)
+                        <span style="font-size: 0.7rem;">Drag here</span>
+                    </div>
+                    <div class="slot-content" id="codeSlot"></div>
+                </div>
+            </div>
+
+            <div class="composer-controls">
+                <button class="btn" onclick="clearRecipe()">Clear All</button>
+                <button class="btn" onclick="loadTemplate('ecommerce')">E-commerce Quickstart</button>
+                <button class="btn" onclick="loadTemplate('dashboard')">Dashboard Quickstart</button>
+                <button class="btn" onclick="loadTemplate('social')">Social App Quickstart</button>
+                <button class="btn btn-primary" onclick="generateRandomApp()">Generate Random App</button>
+                <button class="btn btn-success" onclick="materializeApp()">Materialize App</button>
+            </div>
+        </main>
+
+        <!-- Preview Panel -->
+        <aside class="preview-panel">
+            <div class="panel-header">
+                <h3>Materialized App Preview</h3>
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                    Live Preview
+                </div>
+            </div>
+            <div class="preview-content" id="previewContent">
+                <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">Ω</div>
+                    <h3>Materialize an app to see preview</h3>
+                    <p style="margin-top: 0.5rem;">Drag symbols from the library or use quickstart templates</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // =====================================================================
+        // TOP 100 APPS - Categorized Library
+        // =====================================================================
+
+        const Top100Apps = {
+            categories: [
+                {
+                    id: 'ecommerce',
+                    name: 'E-commerce',
+                    color: 'warning',
+                    apps: [
+                        { symbol: 'Ω_ECOMMERCE_STORE', name: 'Online Store', desc: 'Complete e-commerce with cart, checkout, products' },
+                        { symbol: 'Ω_DROPSHIP_STORE', name: 'Dropshipping Store', desc: 'Dropshipping integration ready' },
+                        { symbol: 'Ω_SUBSCRIPTION_SITE', name: 'Subscription Site', desc: 'Recurring billing and member area' },
+                        { symbol: 'Ω_DIGITAL_PRODUCTS', name: 'Digital Products', desc: 'Downloads, licenses, and digital delivery' },
+                        { symbol: 'Ω_MARKETPLACE', name: 'Marketplace', desc: 'Multi-vendor marketplace platform' },
+                        { symbol: 'Ω_AUCTION_SITE', name: 'Auction Site', desc: 'Real-time bidding system' },
+                        { symbol: 'Ω_BOOKING_SYSTEM', name: 'Booking System', desc: 'Appointments and reservations' },
+                        { symbol: 'Ω_RESTAURANT_ORDERING', name: 'Restaurant Ordering', desc: 'Food delivery and table booking' },
+                        { symbol: 'Ω_TICKETING_SYSTEM', name: 'Ticketing System', desc: 'Event tickets and seat selection' },
+                        { symbol: 'Ω_PAYWALL_CONTENT', name: 'Paywall Content', desc: 'Premium content with subscription access' }
+                    ]
+                },
+                {
+                    id: 'social',
+                    name: 'Social & Community',
+                    color: 'purple',
+                    apps: [
+                        { symbol: 'Ω_SOCIAL_NETWORK', name: 'Social Network', desc: 'Facebook-style social platform' },
+                        { symbol: 'Ω_FORUM_COMMUNITY', name: 'Forum Community', desc: 'Discussion forums and user profiles' },
+                        { symbol: 'Ω_CHAT_APPLICATION', name: 'Chat Application', desc: 'Real-time messaging and groups' },
+                        { symbol: 'Ω_DATING_APP', name: 'Dating App', desc: 'Matches, profiles, and messaging' },
+                        { symbol: 'Ω_BLOGGING_PLATFORM', name: 'Blogging Platform', desc: 'Multi-author blog with comments' },
+                        { symbol: 'Ω_REVIEW_SITE', name: 'Review Site', desc: 'User reviews and ratings' },
+                        { symbol: 'Ω_QNA_PLATFORM', name: 'Q&A Platform', desc: 'Stack Overflow style Q&A' },
+                        { symbol: 'Ω_EVENT_COMMUNITY', name: 'Event Community', desc: 'Event discovery and RSVP' },
+                        { symbol: 'Ω_VIDEO_SHARING', name: 'Video Sharing', desc: 'YouTube-style video platform' },
+                        { symbol: 'Ω_PHOTO_SHARING', name: 'Photo Sharing', desc: 'Instagram-style photo sharing' }
+                    ]
+                },
+                {
+                    id: 'productivity',
+                    name: 'Productivity',
+                    color: 'success',
+                    apps: [
+                        { symbol: 'Ω_PROJECT_MANAGER', name: 'Project Manager', desc: 'Kanban boards and task management' },
+                        { symbol: 'Ω_CRM_SYSTEM', name: 'CRM System', desc: 'Customer relationship management' },
+                        { symbol: 'Ω_EMAIL_CLIENT', name: 'Email Client', desc: 'Modern email interface' },
+                        { symbol: 'Ω_CALENDAR_APP', name: 'Calendar App', desc: 'Shared calendars and scheduling' },
+                        { symbol: 'Ω_NOTE_TAKING', name: 'Note Taking', desc: 'Rich text notes and organization' },
+                        { symbol: 'Ω_TODO_APP', name: 'Todo App', desc: 'Task lists and reminders' },
+                        { symbol: 'Ω_TIME_TRACKER', name: 'Time Tracker', desc: 'Time tracking and reporting' },
+                        { symbol: 'Ω_DOCUMENT_EDITOR', name: 'Document Editor', desc: 'Collaborative document editing' },
+                        { symbol: 'Ω_PRESENTATION_APP', name: 'Presentation App', desc: 'Slide creation and sharing' },
+                        { symbol: 'Ω_SPREADSHEET_APP', name: 'Spreadsheet App', desc: 'Excel-like spreadsheet' }
+                    ]
+                },
+                {
+                    id: 'enterprise',
+                    name: 'Enterprise',
+                    color: 'blue',
+                    apps: [
+                        { symbol: 'Ω_ERP_SYSTEM', name: 'ERP System', desc: 'Enterprise resource planning' },
+                        { symbol: 'Ω_INVENTORY_MGMT', name: 'Inventory Management', desc: 'Stock control and warehousing' },
+                        { symbol: 'Ω_HR_SYSTEM', name: 'HR System', desc: 'Human resources management' },
+                        { symbol: 'Ω_ACCOUNTING_SOFTWARE', name: 'Accounting Software', desc: 'Financial management and reporting' },
+                        { symbol: 'Ω_INVOICING_SYSTEM', name: 'Invoicing System', desc: 'Invoice generation and tracking' },
+                        { symbol: 'Ω_PAYROLL_SYSTEM', name: 'Payroll System', desc: 'Employee payroll processing' },
+                        { symbol: 'Ω_BILLING_SYSTEM', name: 'Billing System', desc: 'Recurring billing and invoicing' },
+                        { symbol: 'Ω_SUPPORT_TICKETS', name: 'Support Tickets', desc: 'Customer support ticket system' },
+                        { symbol: 'Ω_HELPDESK_SYSTEM', name: 'Helpdesk System', desc: 'IT helpdesk and issue tracking' },
+                        { symbol: 'Ω_ASSET_MANAGEMENT', name: 'Asset Management', desc: 'Company asset tracking' }
+                    ]
+                },
+                {
+                    id: 'analytics',
+                    name: 'Analytics & Data',
+                    color: 'cyan',
+                    apps: [
+                        { symbol: 'Ω_DASHBOARD_APP', name: 'Dashboard App', desc: 'Data visualization dashboard' },
+                        { symbol: 'Ω_REPORTING_TOOL', name: 'Reporting Tool', desc: 'Custom report generation' },
+                        { symbol: 'Ω_BI_PLATFORM', name: 'BI Platform', desc: 'Business intelligence platform' },
+                        { symbol: 'Ω_DATA_VISUALIZATION', name: 'Data Visualization', desc: 'Charts, graphs, and data exploration' },
+                        { symbol: 'Ω_METRICS_TRACKER', name: 'Metrics Tracker', desc: 'KPIs and performance metrics' },
+                        { symbol: 'Ω_SURVEY_PLATFORM', name: 'Survey Platform', desc: 'Online surveys and polls' },
+                        { symbol: 'Ω_FORM_BUILDER', name: 'Form Builder', desc: 'Drag-and-drop form creator' },
+                        { symbol: 'Ω_FEEDBACK_SYSTEM', name: 'Feedback System', desc: 'Customer feedback collection' },
+                        { symbol: 'Ω_TESTIMONIALS', name: 'Testimonials', desc: 'Client testimonials and reviews' },
+                        { symbol: 'Ω_ANALYTICS_DASHBOARD', name: 'Analytics Dashboard', desc: 'Website/app analytics' }
+                    ]
+                },
+                {
+                    id: 'media',
+                    name: 'Media & Content',
+                    color: 'pink',
+                    apps: [
+                        { symbol: 'Ω_CONTENT_CMS', name: 'Content CMS', desc: 'Content management system' },
+                        { symbol: 'Ω_NEWS_PORTAL', name: 'News Portal', desc: 'News publication with categories' },
+                        { symbol: 'Ω_MAGAZINE_SITE', name: 'Magazine Site', desc: 'Online magazine layout' },
+                        { symbol: 'Ω_PORTFOLIO_SITE', name: 'Portfolio Site', desc: 'Creative portfolio showcase' },
+                        { symbol: 'Ω_PODCAST_PLATFORM', name: 'Podcast Platform', desc: 'Podcast hosting and player' },
+                        { symbol: 'Ω_VIDEO_COURSE', name: 'Video Course', desc: 'Online course platform' },
+                        { symbol: 'Ω_LMS_PLATFORM', name: 'LMS Platform', desc: 'Learning management system' },
+                        { symbol: 'Ω_WIKI_KNOWLEDGE', name: 'Wiki Knowledge', desc: 'Collaborative knowledge base' },
+                        { symbol: 'Ω_RECIPE_SITE', name: 'Recipe Site', desc: 'Recipe sharing and meal planning' },
+                        { symbol: 'Ω_PHOTO_GALLERY', name: 'Photo Gallery', desc: 'Image gallery and albums' }
+                    ]
+                },
+                {
+                    id: 'utility',
+                    name: 'Utility Apps',
+                    color: 'gray',
+                    apps: [
+                        { symbol: 'Ω_URL_SHORTENER', name: 'URL Shortener', desc: 'Link shortening service' },
+                        { symbol: 'Ω_PASSWORD_MANAGER', name: 'Password Manager', desc: 'Secure password storage' },
+                        { symbol: 'Ω_FILE_CONVERTER', name: 'File Converter', desc: 'Online file format conversion' },
+                        { symbol: 'Ω_WEATHER_APP', name: 'Weather App', desc: 'Weather forecasts and alerts' },
+                        { symbol: 'Ω_CURRENCY_CONVERTER', name: 'Currency Converter', desc: 'Real-time currency rates' },
+                        { symbol: 'Ω_UNIT_CONVERTER', name: 'Unit Converter', desc: 'Measurement unit conversion' },
+                        { symbol: 'Ω_CODE_EDITOR', name: 'Code Editor', desc: 'Online code editor with syntax' },
+                        { symbol: 'Ω_MEETING_SCHEDULER', name: 'Meeting Scheduler', desc: 'Automated meeting scheduling' },
+                        { symbol: 'Ω_EXPENSE_TRACKER', name: 'Expense Tracker', desc: 'Personal expense management' },
+                        { symbol: 'Ω_FITNESS_TRACKER', name: 'Fitness Tracker', desc: 'Workout and fitness tracking' }
+                    ]
+                },
+                {
+                    id: 'specialized',
+                    name: 'Specialized',
+                    color: 'accent',
+                    apps: [
+                        { symbol: 'Ω_REAL_ESTATE_LISTINGS', name: 'Real Estate Listings', desc: 'Property listings and search' },
+                        { symbol: 'Ω_JOB_BOARD', name: 'Job Board', desc: 'Job listings and applications' },
+                        { symbol: 'Ω_FREELANCE_PLATFORM', name: 'Freelance Platform', desc: 'Freelancer marketplace' },
+                        { symbol: 'Ω_DELIVERY_TRACKING', name: 'Delivery Tracking', desc: 'Package tracking system' },
+                        { symbol: 'Ω_HEALTHCARE_PORTAL', name: 'Healthcare Portal', desc: 'Patient management portal' },
+                        { symbol: 'Ω_EDUCATION_PORTAL', name: 'Education Portal', desc: 'School/college management' },
+                        { symbol: 'Ω_TRAVEL_BOOKING', name: 'Travel Booking', desc: 'Hotel and flight bookings' },
+                        { symbol: 'Ω_FUNDRAISING_PLATFORM', name: 'Fundraising Platform', desc: 'Donation and crowdfunding' },
+                        { symbol: 'Ω_PETITION_PLATFORM', name: 'Petition Platform', desc: 'Online petition creation' },
+                        { symbol: 'Ω_VOTING_SYSTEM', name: 'Voting System', desc: 'Secure online voting' }
+                    ]
+                }
+            ],
+
+            layouts: [
+                { symbol: 'Ω_LAYOUT_DASHBOARD', name: 'Dashboard Layout', desc: 'Multi-panel dashboard' },
+                { symbol: 'Ω_LAYOUT_ECOMMERCE', name: 'E-commerce Layout', desc: 'Storefront with cart' },
+                { symbol: 'Ω_LAYOUT_SOCIAL', name: 'Social Layout', desc: 'Feed and profile focused' },
+                { symbol: 'Ω_LAYOUT_CMS', name: 'CMS Layout', desc: 'Content management layout' },
+                { symbol: 'Ω_LAYOUT_LANDING', name: 'Landing Page', desc: 'Single page conversion focused' },
+                { symbol: 'Ω_LAYOUT_PORTAL', name: 'Portal Layout', desc: 'Multi-section portal' },
+                { symbol: 'Ω_LAYOUT_MOBILE', name: 'Mobile App Layout', desc: 'Mobile-optimized interface' },
+                { symbol: 'Ω_LAYOUT_ADMIN', name: 'Admin Panel', desc: 'Administration interface' }
+            ],
+
+            uiBlocks: [
+                { symbol: 'Ω_UI_HEADER', name: 'Header Navigation', desc: 'Top navigation bar' },
+                { symbol: 'Ω_UI_FOOTER', name: 'Footer Section', desc: 'Bottom footer with links' },
+                { symbol: 'Ω_UI_SIDEBAR', name: 'Sidebar Navigation', desc: 'Left/right sidebar' },
+                { symbol: 'Ω_UI_HERO', name: 'Hero Section', desc: 'Large banner section' },
+                { symbol: 'Ω_UI_FEATURE_GRID', name: 'Feature Grid', desc: 'Feature showcase grid' },
+                { symbol: 'Ω_UI_TESTIMONIALS', name: 'Testimonials', desc: 'Customer testimonials' },
+                { symbol: 'Ω_UI_PRICING', name: 'Pricing Tables', desc: 'Pricing plan tables' },
+                { symbol: 'Ω_UI_CONTACT_FORM', name: 'Contact Form', desc: 'Contact information form' },
+                { symbol: 'Ω_UI_STATISTICS', name: 'Statistics Display', desc: 'Stats and metrics display' },
+                { symbol: 'Ω_UI_CAROUSEL', name: 'Image Carousel', desc: 'Sliding image gallery' },
+                { symbol: 'Ω_UI_MAP', name: 'Interactive Map', desc: 'Embedded map display' },
+                { symbol: 'Ω_UI_CHAT_WIDGET', name: 'Chat Widget', desc: 'Live chat interface' },
+                { symbol: 'Ω_UI_SEARCH', name: 'Search Interface', desc: 'Advanced search form' },
+                { symbol: 'UI_FILTERS', name: 'Filter Panel', desc: 'Data filtering controls' },
+                { symbol: 'Ω_UI_DATA_TABLE', name: 'Data Table', desc: 'Sortable data table' }
+            ],
+
+            skins: [
+                { symbol: 'Ω_SKIN_MODERN', name: 'Modern', desc: 'Clean, minimalist design' },
+                { symbol: 'Ω_SKIN_PROFESSIONAL', name: 'Professional', desc: 'Corporate business style' },
+                { symbol: 'Ω_SKIN_CREATIVE', name: 'Creative', desc: 'Artistic and colorful' },
+                { symbol: 'Ω_SKIN_DARK_MODE', name: 'Dark Mode', desc: 'Dark theme optimized' },
+                { symbol: 'Ω_SKIN_LIGHT_MODE', name: 'Light Mode', desc: 'Light theme optimized' },
+                { symbol: 'Ω_SKIN_RETRO', name: 'Retro', desc: '90s nostalgic design' },
+                { symbol: 'Ω_SKIN_FUTURISTIC', name: 'Futuristic', desc: 'Cyberpunk/neon style' },
+                { symbol: 'Ω_SKIN_MATERIAL', name: 'Material Design', desc: 'Google Material Design' }
+            ],
+
+            codeModules: [
+                { symbol: 'Ω_AUTH_SYSTEM', name: 'Authentication', desc: 'User login and registration' },
+                { symbol: 'Ω_PAYMENT_GATEWAY', name: 'Payment Gateway', desc: 'Stripe/PayPal integration' },
+                { symbol: 'Ω_EMAIL_SERVICE', name: 'Email Service', desc: 'Transactional emails' },
+                { symbol: 'Ω_NOTIFICATIONS', name: 'Notifications', desc: 'Push and in-app notifications' },
+                { symbol: 'Ω_AI_CHATBOT', name: 'AI Chatbot', desc: 'Intelligent chatbot assistant' },
+                { symbol: 'Ω_SEARCH_ENGINE', name: 'Search Engine', desc: 'Full-text search' },
+                { symbol: 'Ω_API_GATEWAY', name: 'API Gateway', desc: 'REST/GraphQL API layer' },
+                { symbol: 'Ω_REALTIME_SYNC', name: 'Realtime Sync', desc: 'Live data synchronization' },
+                { symbol: 'Ω_FILE_UPLOAD', name: 'File Upload', desc: 'Cloud file storage' },
+                { symbol: 'Ω_ANALYTICS_TRACKING', name: 'Analytics Tracking', desc: 'User behavior analytics' }
+            ]
+        };
+
+        // =====================================================================
+        // SCX LEXICON REGISTRATION
+        // =====================================================================
+
+        const SCXLexicon = {
+            blocks: new Map(),
+            skins: new Map(),
+            layouts: new Map(),
+            code: new Map(),
+            apps: new Map(),
+
+            // Initialize all 100+ apps
+            initializeAllApps() {
+                // Register all app templates
+                Top100Apps.categories.forEach(category => {
+                    category.apps.forEach(app => {
+                        this.registerApp(app.symbol, {
+                            name: app.name,
+                            description: app.desc,
+                            category: category.id,
+                            recipe: this.generateDefaultRecipe(category.id)
+                        });
+                    });
+                });
+
+                // Register layouts
+                Top100Apps.layouts.forEach(layout => {
+                    this.registerLayout(layout.symbol, {
+                        name: layout.name,
+                        description: layout.desc
+                    });
+                });
+
+                // Register UI blocks
+                Top100Apps.uiBlocks.forEach(block => {
+                    this.registerBlock(block.symbol, {
+                        name: block.name,
+                        description: block.desc
+                    });
+                });
+
+                // Register skins
+                Top100Apps.skins.forEach(skin => {
+                    this.registerSkin(skin.symbol, {
+                        name: skin.name,
+                        description: skin.desc
+                    });
+                });
+
+                // Register code modules
+                Top100Apps.codeModules.forEach(module => {
+                    this.registerCode(module.symbol, {
+                        name: module.name,
+                        description: module.desc
+                    });
+                });
+            },
+
+            generateDefaultRecipe(category) {
+                const recipes = {
+                    ecommerce: {
+                        layout: 'Ω_LAYOUT_ECOMMERCE',
+                        blocks: ['Ω_UI_HEADER', 'Ω_UI_FOOTER', 'Ω_UI_HERO'],
+                        skin: 'Ω_SKIN_MODERN',
+                        code: ['Ω_AUTH_SYSTEM', 'Ω_PAYMENT_GATEWAY']
+                    },
+                    social: {
+                        layout: 'Ω_LAYOUT_SOCIAL',
+                        blocks: ['Ω_UI_HEADER', 'Ω_UI_FOOTER', 'Ω_UI_SIDEBAR'],
+                        skin: 'Ω_SKIN_MODERN',
+                        code: ['Ω_AUTH_SYSTEM', 'Ω_REALTIME_SYNC']
+                    },
+                    productivity: {
+                        layout: 'Ω_LAYOUT_DASHBOARD',
+                        blocks: ['Ω_UI_HEADER', 'Ω_UI_SIDEBAR', 'Ω_UI_DATA_TABLE'],
+                        skin: 'Ω_SKIN_PROFESSIONAL',
+                        code: ['Ω_AUTH_SYSTEM', 'Ω_NOTIFICATIONS']
+                    },
+                    enterprise: {
+                        layout: 'Ω_LAYOUT_ADMIN',
+                        blocks: ['Ω_UI_HEADER', 'Ω_UI_SIDEBAR', 'Ω_UI_DATA_TABLE'],
+                        skin: 'Ω_SKIN_PROFESSIONAL',
+                        code: ['Ω_AUTH_SYSTEM', 'Ω_EMAIL_SERVICE']
+                    }
+                };
+                return recipes[category] || recipes.ecommerce;
+            },
+
+            registerBlock(symbol, blockDef) {
+                this.blocks.set(symbol, blockDef);
+            },
+
+            registerSkin(symbol, skinDef) {
+                this.skins.set(symbol, skinDef);
+            },
+
+            registerLayout(symbol, layoutDef) {
+                this.layouts.set(symbol, layoutDef);
+            },
+
+            registerCode(symbol, codeDef) {
+                this.code.set(symbol, codeDef);
+            },
+
+            registerApp(symbol, appDef) {
+                this.apps.set(symbol, appDef);
+            },
+
+            get(symbol) {
+                return this.blocks.get(symbol) ||
+                       this.skins.get(symbol) ||
+                       this.layouts.get(symbol) ||
+                       this.code.get(symbol) ||
+                       this.apps.get(symbol) ||
+                       null;
+            },
+
+            getAppByCategory(categoryId) {
+                const category = Top100Apps.categories.find(c => c.id === categoryId);
+                return category ? category.apps : [];
+            }
+        };
+
+        // =====================================================================
+        // APP FACTORY ENGINE
+        // =====================================================================
+
+        const SCXAppFactory = {
+            currentRecipe: {
+                app: null,
+                layout: null,
+                blocks: [],
+                skin: null,
+                code: []
+            },
+
+            maxBlocks: 10,
+            maxCodeModules: 5,
+
+            // Add symbol to recipe
+            addToRecipe(symbol, type) {
+                if (type === 'app') {
+                    this.currentRecipe.app = symbol;
+                } else if (type === 'layout') {
+                    this.currentRecipe.layout = symbol;
+                } else if (type === 'block') {
+                    if (this.currentRecipe.blocks.length >= this.maxBlocks) {
+                        alert(`Maximum ${this.maxBlocks} UI blocks allowed`);
+                        return;
+                    }
+                    if (!this.currentRecipe.blocks.includes(symbol)) {
+                        this.currentRecipe.blocks.push(symbol);
+                    }
+                } else if (type === 'skin') {
+                    this.currentRecipe.skin = symbol;
+                } else if (type === 'code') {
+                    if (this.currentRecipe.code.length >= this.maxCodeModules) {
+                        alert(`Maximum ${this.maxCodeModules} code modules allowed`);
+                        return;
+                    }
+                    if (!this.currentRecipe.code.includes(symbol)) {
+                        this.currentRecipe.code.push(symbol);
+                    }
+                }
+                this.updateRecipeDisplay();
+            },
+
+            // Remove from recipe
+            removeFromRecipe(symbol, type) {
+                if (type === 'app' && this.currentRecipe.app === symbol) {
+                    this.currentRecipe.app = null;
+                } else if (type === 'layout' && this.currentRecipe.layout === symbol) {
+                    this.currentRecipe.layout = null;
+                } else if (type === 'block') {
+                    this.currentRecipe.blocks = this.currentRecipe.blocks.filter(s => s !== symbol);
+                } else if (type === 'skin' && this.currentRecipe.skin === symbol) {
+                    this.currentRecipe.skin = null;
+                } else if (type === 'code') {
+                    this.currentRecipe.code = this.currentRecipe.code.filter(s => s !== symbol);
+                }
+                this.updateRecipeDisplay();
+            },
+
+            // Clear entire recipe
+            clearRecipe() {
+                this.currentRecipe = {
+                    app: null,
+                    layout: null,
+                    blocks: [],
+                    skin: null,
+                    code: []
+                };
+                this.updateRecipeDisplay();
+            },
+
+            // Load template recipe
+            loadTemplate(templateName) {
+                this.clearRecipe();
+
+                const templates = {
+                    ecommerce: {
+                        app: 'Ω_ECOMMERCE_STORE',
+                        layout: 'Ω_LAYOUT_ECOMMERCE',
+                        blocks: ['Ω_UI_HEADER', 'Ω_UI_FOOTER', 'Ω_UI_HERO', 'Ω_UI_PRICING'],
+                        skin: 'Ω_SKIN_MODERN',
+                        code: ['Ω_AUTH_SYSTEM', 'Ω_PAYMENT_GATEWAY', 'Ω_EMAIL_SERVICE']
+                    },
+                    dashboard: {
+                        app: 'Ω_DASHBOARD_APP',
+                        layout: 'Ω_LAYOUT_DASHBOARD',
+                        blocks: ['Ω_UI_HEADER', 'Ω_UI_SIDEBAR', 'Ω_UI_DATA_TABLE', 'Ω_UI_STATISTICS'],
+                        skin: 'Ω_SKIN_PROFESSIONAL',
+                        code: ['Ω_AUTH_SYSTEM', 'Ω_NOTIFICATIONS', 'Ω_ANALYTICS_TRACKING']
+                    },
+                    social: {
+                        app: 'Ω_SOCIAL_NETWORK',
+                        layout: 'Ω_LAYOUT_SOCIAL',
+                        blocks: ['Ω_UI_HEADER', 'Ω_UI_FOOTER', 'Ω_UI_SIDEBAR', 'Ω_UI_CHAT_WIDGET'],
+                        skin: 'Ω_SKIN_MODERN',
+                        code: ['Ω_AUTH_SYSTEM', 'Ω_REALTIME_SYNC', 'Ω_SEARCH_ENGINE']
+                    }
+                };
+
+                const template = templates[templateName];
+                if (template) {
+                    Object.assign(this.currentRecipe, template);
+                }
+
+                this.updateRecipeDisplay();
+            },
+
+            // Generate random app
+            generateRandomApp() {
+                this.clearRecipe();
+
+                // Pick random category
+                const category = Top100Apps.categories[Math.floor(Math.random() * Top100Apps.categories.length)];
+                const app = category.apps[Math.floor(Math.random() * category.apps.length)];
+
+                this.currentRecipe.app = app.symbol;
+                this.currentRecipe.layout = Top100Apps.layouts[Math.floor(Math.random() * Top100Apps.layouts.length)].symbol;
+                this.currentRecipe.skin = Top100Apps.skins[Math.floor(Math.random() * Top100Apps.skins.length)].symbol;
+
+                // Add 2-4 random blocks
+                const numBlocks = 2 + Math.floor(Math.random() * 3);
+                const shuffledBlocks = [...Top100Apps.uiBlocks].sort(() => 0.5 - Math.random());
+                this.currentRecipe.blocks = shuffledBlocks.slice(0, numBlocks).map(b => b.symbol);
+
+                // Add 1-3 random code modules
+                const numModules = 1 + Math.floor(Math.random() * 3);
+                const shuffledModules = [...Top100Apps.codeModules].sort(() => 0.5 - Math.random());
+                this.currentRecipe.code = shuffledModules.slice(0, numModules).map(m => m.symbol);
+
+                this.updateRecipeDisplay();
+                this.materializeApp();
+            },
+
+            // Update UI display
+            updateRecipeDisplay() {
+                // Update slot displays with chips
+                this.updateSlotDisplay('appSlot', this.currentRecipe.app);
+                this.updateSlotDisplay('layoutSlot', this.currentRecipe.layout);
+                this.updateSlotDisplay('blocksSlot', this.currentRecipe.blocks);
+                this.updateSlotDisplay('skinSlot', this.currentRecipe.skin);
+                this.updateSlotDisplay('codeSlot', this.currentRecipe.code);
+
+                // Update counters
+                document.querySelector('[data-slot="blocks"] .slot-label').innerHTML =
+                    `UI Blocks (${this.currentRecipe.blocks.length}/${this.maxBlocks}) <span style="font-size: 0.7rem;">Drag here</span>`;
+
+                document.querySelector('[data-slot="code"] .slot-label').innerHTML =
+                    `Code Modules (${this.currentRecipe.code.length}/${this.maxCodeModules}) <span style="font-size: 0.7rem;">Drag here</span>`;
+
+                // Update recipe summary
+                const summary = [];
+                if (this.currentRecipe.app) {
+                    const appDef = SCXLexicon.apps.get(this.currentRecipe.app);
+                    summary.push(`${appDef ? appDef.name : 'App'}`);
+                }
+                if (this.currentRecipe.layout) summary.push('Layout');
+                if (this.currentRecipe.blocks.length) summary.push(`${this.currentRecipe.blocks.length} blocks`);
+                if (this.currentRecipe.skin) summary.push('Skin');
+                if (this.currentRecipe.code.length) summary.push(`${this.currentRecipe.code.length} modules`);
+
+                document.getElementById('recipeSummary').textContent =
+                    summary.join(' • ') || 'Drag symbols to build your app recipe';
+            },
+
+            updateSlotDisplay(slotId, value) {
+                const slot = document.getElementById(slotId);
+                slot.innerHTML = '';
+
+                if (Array.isArray(value)) {
+                    value.forEach(symbol => {
+                        const chip = document.createElement('div');
+                        chip.className = 'slot-chip';
+                        chip.innerHTML = `
+                            ${symbol}
+                            <span class="remove-chip" onclick="SCXAppFactory.removeFromRecipe('${symbol}', '${slotId.replace('Slot', '')}')">×</span>
+                        `;
+                        slot.appendChild(chip);
+                    });
+                } else if (value) {
+                    const chip = document.createElement('div');
+                    chip.className = 'slot-chip';
+                    const type = slotId.replace('Slot', '');
+                    chip.innerHTML = `
+                        ${value}
+                        <span class="remove-chip" onclick="SCXAppFactory.removeFromRecipe('${value}', '${type}')">×</span>
+                    `;
+                    slot.appendChild(chip);
+                }
+            },
+
+            // Materialize app from recipe
+            materializeApp() {
+                if (!this.currentRecipe.app) {
+                    alert('Please select an App Template first!');
+                    return;
+                }
+
+                const app = {
+                    metadata: {
+                        name: SCXLexicon.apps.get(this.currentRecipe.app)?.name || 'Materialized App',
+                        description: SCXLexicon.apps.get(this.currentRecipe.app)?.description || '',
+                        created: new Date().toISOString(),
+                        recipe: this.currentRecipe
+                    },
+                    blueprint: this.generateBlueprint(),
+                    preview: this.generatePreview()
+                };
+
+                this.displayMaterializedApp(app);
+            },
+
+            generateBlueprint() {
+                const blueprint = {
+                    app: this.currentRecipe.app,
+                    layout: this.currentRecipe.layout,
+                    ui_components: this.currentRecipe.blocks.map(block => ({
+                        symbol: block,
+                        type: 'ui_block',
+                        config: {}
+                    })),
+                    theme: this.currentRecipe.skin,
+                    modules: this.currentRecipe.code.map(module => ({
+                        symbol: module,
+                        type: 'code_module',
+                        config: {}
+                    })),
+                    dependencies: [...this.currentRecipe.blocks, ...this.currentRecipe.code],
+                    estimated_size: `${Math.floor(Math.random() * 50) + 10}KB`,
+                    scx_complexity: Math.floor(Math.random() * 100)
+                };
+
+                return blueprint;
+            },
+
+            generatePreview() {
+                const appName = SCXLexicon.apps.get(this.currentRecipe.app)?.name || 'Your App';
+                const appDesc = SCXLexicon.apps.get(this.currentRecipe.app)?.description || '';
+
+                return `
+                    <div class="materialized-app" style="font-family: system-ui, sans-serif; background: white; color: #333; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1);">
+                        <header style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+                            <h1 style="margin: 0; font-size: 2rem;">${appName}</h1>
+                            <p style="opacity: 0.9; margin-top: 0.5rem;">${appDesc}</p>
+                        </header>
+
+                        <div style="padding: 2rem;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                                <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                                    <h3 style="margin-top: 0; color: #667eea;">App Structure</h3>
+                                    <ul style="list-style: none; padding: 0;">
+                                        <li>📱 <strong>Template:</strong> ${this.currentRecipe.app || 'None'}</li>
+                                        <li>🎨 <strong>Layout:</strong> ${this.currentRecipe.layout || 'Default'}</li>
+                                        <li>🎯 <strong>UI Blocks:</strong> ${this.currentRecipe.blocks.length}</li>
+                                        <li>🌈 <strong>Skin:</strong> ${this.currentRecipe.skin || 'Default'}</li>
+                                    </ul>
+                                </div>
+
+                                <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                                    <h3 style="margin-top: 0; color: #667eea;">Code Modules</h3>
+                                    <ul style="list-style: none; padding: 0;">
+                                        ${this.currentRecipe.code.map(module =>
+                                            `<li>⚡ <strong>${SCXLexicon.code.get(module)?.name || module}</strong></li>`
+                                        ).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); padding: 1.5rem; border-radius: 8px; text-align: center;">
+                                <h3 style="margin: 0; color: white;">App Preview Ready</h3>
+                                <p style="color: white; opacity: 0.9;">This SCX-powered app has been materialized from symbolic components</p>
+                            </div>
+
+                            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                                <button style="background: #667eea; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">
+                                    Launch App
+                                </button>
+                                <button style="background: #48bb78; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">
+                                    Edit in Studio
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            displayMaterializedApp(app) {
+                const previewContent = document.getElementById('previewContent');
+
+                const html = `
+                    ${app.preview}
+
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px;">
+                        <h4 style="margin-top: 0; color: var(--accent);">SCX App Blueprint</h4>
+                        <pre style="font-size: 0.75rem; color: var(--text-secondary); background: var(--bg-tertiary); padding: 1rem; border-radius: 6px; overflow: auto; max-height: 200px;">
+${JSON.stringify(app.blueprint, null, 2)}
+                        </pre>
+                        <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.8rem;">
+                            <span>Symbolic Complexity: ${app.blueprint.scx_complexity}/100</span>
+                            <span>Estimated Size: ${app.blueprint.estimated_size}</span>
+                        </div>
+                    </div>
+                `;
+
+                previewContent.innerHTML = html;
+            }
+        };
+
+        // =====================================================================
+        // UI INITIALIZATION
+        // =====================================================================
+
+        function initializeLibrary() {
+            const libraryContent = document.getElementById('libraryContent');
+
+            // Render categories
+            Top100Apps.categories.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category-accordion';
+
+                categoryDiv.innerHTML = `
+                    <div class="category-header" onclick="toggleCategory('${category.id}')">
+                        <div>
+                            <strong>${category.name}</strong>
+                            <span style="font-size: 0.7rem; margin-left: 0.5rem; color: var(--text-secondary);">
+                                ${category.apps.length} apps
+                            </span>
+                        </div>
+                        <span>▼</span>
+                    </div>
+                    <div class="symbol-grid" id="category-${category.id}" style="display: none;">
+                        ${category.apps.map(app => `
+                            <div class="symbol-item category-${category.id}"
+                                 draggable="true"
+                                 data-symbol="${app.symbol}"
+                                 data-type="app">
+                                <span class="symbol-tag ${category.id}">${category.name}</span>
+                                <div style="flex: 1;">
+                                    <strong>${app.name}</strong>
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">${app.desc}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                libraryContent.appendChild(categoryDiv);
+            });
+
+            // Add other sections
+            const otherSections = [
+                { id: 'layouts', title: 'Layouts', items: Top100Apps.layouts, type: 'layout' },
+                { id: 'ui-blocks', title: 'UI Blocks', items: Top100Apps.uiBlocks, type: 'block' },
+                { id: 'skins', title: 'Skins', items: Top100Apps.skins, type: 'skin' },
+                { id: 'code-modules', title: 'Code Modules', items: Top100Apps.codeModules, type: 'code' }
+            ];
+
+            otherSections.forEach(section => {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'category-accordion';
+
+                sectionDiv.innerHTML = `
+                    <div class="category-header" onclick="toggleCategory('${section.id}')">
+                        <strong>${section.title}</strong>
+                        <span>▼</span>
+                    </div>
+                    <div class="symbol-grid" id="category-${section.id}" style="display: none;">
+                        ${section.items.map(item => `
+                            <div class="symbol-item"
+                                 draggable="true"
+                                 data-symbol="${item.symbol}"
+                                 data-type="${section.type}">
+                                <div style="flex: 1;">
+                                    <strong>${item.name}</strong>
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">${item.desc}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                libraryContent.appendChild(sectionDiv);
+            });
+
+            // Initialize drag and drop
+            initializeDragAndDrop();
+
+            // Initialize lexicon
+            SCXLexicon.initializeAllApps();
+
+            // Show first category by default
+            setTimeout(() => toggleCategory('ecommerce'), 100);
+        }
+
+        function toggleCategory(categoryId) {
+            const element = document.getElementById(`category-${categoryId}`);
+            if (element) {
+                element.style.display = element.style.display === 'none' ? 'grid' : 'none';
+            }
+        }
+
+        function searchApps(query) {
+            const normalizedQuery = query.toLowerCase();
+
+            document.querySelectorAll('.symbol-item').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const parent = item.closest('.symbol-grid');
+
+                if (normalizedQuery === '' || text.includes(normalizedQuery)) {
+                    item.style.display = 'flex';
+                    if (normalizedQuery !== '') {
+                        parent.style.display = 'grid';
+                        parent.previousElementSibling.style.display = 'flex';
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function initializeDragAndDrop() {
+            const symbolItems = document.querySelectorAll('.symbol-item');
+            const recipeSlots = document.querySelectorAll('.recipe-slot');
+
+            // Setup draggable symbols
+            symbolItems.forEach(item => {
+                item.setAttribute('draggable', 'true');
+
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', JSON.stringify({
+                        symbol: item.dataset.symbol,
+                        type: item.dataset.type
+                    }));
+                });
+            });
+
+            // Setup drop zones
+            recipeSlots.forEach(slot => {
+                slot.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    slot.classList.add('active');
+                });
+
+                slot.addEventListener('dragleave', () => {
+                    slot.classList.remove('active');
+                });
+
+                slot.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    slot.classList.remove('active');
+
+                    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                    SCXAppFactory.addToRecipe(data.symbol, data.type);
+                });
+            });
+        }
+
+        // UI Control Functions
+        function clearRecipe() {
+            SCXAppFactory.clearRecipe();
+        }
+
+        function loadTemplate(templateName) {
+            SCXAppFactory.loadTemplate(templateName);
+        }
+
+        function generateRandomApp() {
+            SCXAppFactory.generateRandomApp();
+        }
+
+        function materializeApp() {
+            SCXAppFactory.materializeApp();
+        }
+
+        function saveRecipe() {
+            const recipe = SCXAppFactory.currentRecipe;
+            const recipeString = JSON.stringify(recipe, null, 2);
+            const blob = new Blob([recipeString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `scx-recipe-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportApp() {
+            if (!SCXAppFactory.currentRecipe.app) {
+                alert('Please materialize an app first!');
+                return;
+            }
+
+            const appData = {
+                recipe: SCXAppFactory.currentRecipe,
+                blueprint: SCXAppFactory.generateBlueprint(),
+                generated: new Date().toISOString(),
+                scx_version: '1.0.0'
+            };
+
+            const dataStr = JSON.stringify(appData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `scx-app-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showUpdateNotification() {
+            if (confirm('A new version of SCX Foundry is available. Reload to update?')) {
+                window.location.reload();
+            }
+        }
+
+        // Initialize the foundry
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeLibrary();
+            SCXAppFactory.updateRecipeDisplay();
+        });
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        setInterval(() => {
+                            registration.update();
+                        }, 60 * 60 * 1000);
+
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            if (!newWorker) return;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    showUpdateNotification();
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('SW registration failed:', error);
+                    });
+            });
+        }
+
+        // Handle install prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', event => {
+            event.preventDefault();
+            deferredPrompt = event;
+
+            const installBtn = document.getElementById('installBtn');
+            if (installBtn) {
+                installBtn.style.display = 'inline-flex';
+                installBtn.addEventListener('click', async () => {
+                    if (!deferredPrompt) return;
+                    deferredPrompt.prompt();
+                    await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                    installBtn.style.display = 'none';
+                }, { once: true });
+            }
+        });
+    </script>
+</body>
+</html>

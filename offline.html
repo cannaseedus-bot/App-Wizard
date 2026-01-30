@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCX Foundry Offline</title>
+  <style>
+    :root {
+      --bg: #05060b;
+      --panel: #10121a;
+      --accent: #5ac8fa;
+      --text: #f5f7ff;
+      --muted: #b4c2f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #13203a 0%, #02030a 50%, #000 100%);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 520px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    .icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.75rem;
+    }
+
+    p {
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    button {
+      background: var(--accent);
+      border: none;
+      color: #000;
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">Ω</div>
+    <h1>You’re offline</h1>
+    <p>SCX Symbolic App Foundry is offline, but your core experience is still available once the connection returns.</p>
+    <button onclick="window.location.reload()">Retry connection</button>
+  </div>
+</body>
+</html>
