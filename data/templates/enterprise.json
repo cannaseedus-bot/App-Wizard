@@ -1,0 +1,10 @@
+{
+  "template": "enterprise",
+  "recipe": {
+    "app": "Ω_ERP_SYSTEM",
+    "layout": "Ω_LAYOUT_ADMIN",
+    "blocks": ["Ω_UI_HEADER", "Ω_UI_SIDEBAR"],
+    "skin": "Ω_SKIN_PROFESSIONAL",
+    "code": ["Ω_AUTH_SYSTEM"]
+  }
+}

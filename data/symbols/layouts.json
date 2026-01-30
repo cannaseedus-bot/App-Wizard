@@ -1,0 +1,6 @@
+{
+  "layouts": [
+    { "symbol": "Ω_LAYOUT_DASHBOARD", "name": "Dashboard Layout" },
+    { "symbol": "Ω_LAYOUT_ECOMMERCE", "name": "E-commerce Layout" }
+  ]
+}

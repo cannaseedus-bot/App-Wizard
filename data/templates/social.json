@@ -1,0 +1,10 @@
+{
+  "template": "social",
+  "recipe": {
+    "app": "Ω_SOCIAL_NETWORK",
+    "layout": "Ω_LAYOUT_SOCIAL",
+    "blocks": ["Ω_UI_HEADER"],
+    "skin": "Ω_SKIN_MODERN",
+    "code": ["Ω_AUTH_SYSTEM"]
+  }
+}
