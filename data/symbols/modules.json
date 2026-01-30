@@ -1,0 +1,6 @@
+{
+  "modules": [
+    { "symbol": "Ω_AUTH_SYSTEM", "name": "Authentication" },
+    { "symbol": "Ω_PAYMENT_GATEWAY", "name": "Payment Gateway" }
+  ]
+}

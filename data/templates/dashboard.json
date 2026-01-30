@@ -1,0 +1,10 @@
+{
+  "template": "dashboard",
+  "recipe": {
+    "app": "Ω_DASHBOARD_APP",
+    "layout": "Ω_LAYOUT_DASHBOARD",
+    "blocks": ["Ω_UI_HEADER", "Ω_UI_SIDEBAR"],
+    "skin": "Ω_SKIN_PROFESSIONAL",
+    "code": ["Ω_AUTH_SYSTEM"]
+  }
+}

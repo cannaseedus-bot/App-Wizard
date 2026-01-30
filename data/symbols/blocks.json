@@ -1,0 +1,6 @@
+{
+  "blocks": [
+    { "symbol": "Ω_UI_HEADER", "name": "Header Navigation" },
+    { "symbol": "Ω_UI_FOOTER", "name": "Footer Section" }
+  ]
+}

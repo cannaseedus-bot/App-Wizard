@@ -1,0 +1,6 @@
+{
+  "apps": [
+    { "symbol": "Ω_ECOMMERCE_STORE", "name": "Online Store", "category": "ecommerce" },
+    { "symbol": "Ω_SOCIAL_NETWORK", "name": "Social Network", "category": "social" }
+  ]
+}

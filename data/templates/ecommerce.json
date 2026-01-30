@@ -1,0 +1,10 @@
+{
+  "template": "ecommerce",
+  "recipe": {
+    "app": "Ω_ECOMMERCE_STORE",
+    "layout": "Ω_LAYOUT_ECOMMERCE",
+    "blocks": ["Ω_UI_HEADER", "Ω_UI_FOOTER"],
+    "skin": "Ω_SKIN_MODERN",
+    "code": ["Ω_AUTH_SYSTEM", "Ω_PAYMENT_GATEWAY"]
+  }
+}
