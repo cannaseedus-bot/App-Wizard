@@ -1,0 +1,114 @@
+<svg
+  width="512"
+  height="512"
+  viewBox="0 0 512 512"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label="ASX App Wizard Logo"
+  style="
+    --wizard-step: 1;
+    --wizard-energy: 0.6;
+    --wizard-glow: 0.4;
+  "
+>
+
+  <defs>
+    <!-- Background -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <!-- Accent -->
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+
+    <!-- Glow -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Card -->
+  <rect x="0" y="0" width="512" height="512" rx="96" fill="url(#bg)"/>
+
+  <!-- Wizard Steps -->
+  <g fill="none" stroke="url(#accent)" stroke-width="10" opacity="0.9">
+    <circle cx="156" cy="176" r="18"/>
+    <circle cx="256" cy="176" r="18"/>
+    <circle cx="356" cy="176" r="18"/>
+    <path d="M174 176 H238"/>
+    <path d="M274 176 H338"/>
+  </g>
+
+  <!-- Pulses -->
+  <g fill="none" stroke="#38bdf8" opacity="0.6" filter="url(#glow)">
+    <circle cx="156" cy="176" r="18">
+      <animate attributeName="r" values="18;28;18" dur="1.6s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0;0.6" dur="1.6s" repeatCount="indefinite"/>
+    </circle>
+
+    <circle cx="256" cy="176" r="18">
+      <animate attributeName="r" values="18;28;18" dur="1.6s" begin="0.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0;0.6" dur="1.6s" begin="0.5s" repeatCount="indefinite"/>
+    </circle>
+
+    <circle cx="356" cy="176" r="18">
+      <animate attributeName="r" values="18;28;18" dur="1.6s" begin="1s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0;0.6" dur="1.6s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Focus Beam -->
+  <path
+    d="M256 214 L256 304"
+    stroke="#38bdf8"
+    stroke-width="6"
+    opacity="calc(0.2 + var(--wizard-energy))"
+  />
+
+  <!-- Creation Ring -->
+  <circle
+    cx="256"
+    cy="336"
+    r="44"
+    fill="none"
+    stroke="url(#accent)"
+    stroke-width="12"
+    opacity="calc(0.5 + var(--wizard-glow))"
+  />
+
+  <!-- ASX Baseline -->
+  <text
+    x="256"
+    y="430"
+    text-anchor="middle"
+    font-size="140"
+    font-family="system-ui, -apple-system, Segoe UI, sans-serif"
+    font-weight="700"
+    fill="#e5e7eb"
+    letter-spacing="-10"
+  >
+    ASX
+  </text>
+
+  <!-- Wizard Label (Below ASX) -->
+  <text
+    x="256"
+    y="472"
+    text-anchor="middle"
+    font-size="24"
+    font-family="system-ui, -apple-system, Segoe UI, sans-serif"
+    fill="#94a3b8"
+    letter-spacing="4"
+  >
+    APP WIZARD
+  </text>
+
+</svg>
