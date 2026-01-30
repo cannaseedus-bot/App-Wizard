@@ -1,0 +1,25 @@
+{
+  "name": "SCX Symbolic App Foundry",
+  "short_name": "App Foundry",
+  "description": "Generate 100+ applications from symbolic recipes. Build complete apps without writing code.",
+  "scope": ".",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "landscape",
+  "theme_color": "#05060b",
+  "background_color": "#05060b",
+  "icons": [
+    {
+      "src": "icons/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "productivity",
+    "developer-tools",
+    "business",
+    "utilities"
+  ]
+}
